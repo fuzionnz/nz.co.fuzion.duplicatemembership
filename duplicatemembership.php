@@ -1,0 +1,189 @@
+<?php
+
+require_once 'duplicatemembership.civix.php';
+use CRM_Duplicatemembership_ExtensionUtil as E;
+
+/**
+ * Implements hook_civicrm_config().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
+ */
+function duplicatemembership_civicrm_config(&$config) {
+  _duplicatemembership_civix_civicrm_config($config);
+}
+
+/**
+ * Implements hook_civicrm_xmlMenu().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_xmlMenu
+ */
+function duplicatemembership_civicrm_xmlMenu(&$files) {
+  _duplicatemembership_civix_civicrm_xmlMenu($files);
+}
+
+/**
+ * Implements hook_civicrm_install().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
+ */
+function duplicatemembership_civicrm_install() {
+  _duplicatemembership_civix_civicrm_install();
+}
+
+/**
+ * Implements hook_civicrm_postInstall().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
+ */
+function duplicatemembership_civicrm_postInstall() {
+  _duplicatemembership_civix_civicrm_postInstall();
+}
+
+/**
+ * Implements hook_civicrm_uninstall().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
+ */
+function duplicatemembership_civicrm_uninstall() {
+  _duplicatemembership_civix_civicrm_uninstall();
+}
+
+/**
+ * Implements hook_civicrm_enable().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
+ */
+function duplicatemembership_civicrm_enable() {
+  _duplicatemembership_civix_civicrm_enable();
+}
+
+/**
+ * Implements hook_civicrm_disable().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
+ */
+function duplicatemembership_civicrm_disable() {
+  _duplicatemembership_civix_civicrm_disable();
+}
+
+/**
+ * Implements hook_civicrm_upgrade().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
+ */
+function duplicatemembership_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  return _duplicatemembership_civix_civicrm_upgrade($op, $queue);
+}
+
+/**
+ * Implements hook_civicrm_managed().
+ *
+ * Generate a list of entities to create/deactivate/delete when this module
+ * is installed, disabled, uninstalled.
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_managed
+ */
+function duplicatemembership_civicrm_managed(&$entities) {
+  _duplicatemembership_civix_civicrm_managed($entities);
+}
+
+/**
+ * Implements hook_civicrm_caseTypes().
+ *
+ * Generate a list of case-types.
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_caseTypes
+ */
+function duplicatemembership_civicrm_caseTypes(&$caseTypes) {
+  _duplicatemembership_civix_civicrm_caseTypes($caseTypes);
+}
+
+/**
+ * Implements hook_civicrm_angularModules().
+ *
+ * Generate a list of Angular modules.
+ *
+ * Note: This hook only runs in CiviCRM 4.5+. It may
+ * use features only available in v4.6+.
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_angularModules
+ */
+function duplicatemembership_civicrm_angularModules(&$angularModules) {
+  _duplicatemembership_civix_civicrm_angularModules($angularModules);
+}
+
+/**
+ * Implements hook_civicrm_alterSettingsFolders().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterSettingsFolders
+ */
+function duplicatemembership_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+  _duplicatemembership_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+/**
+ * Implements hook_civicrm_entityTypes().
+ *
+ * Declare entity types provided by this module.
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
+ */
+function duplicatemembership_civicrm_entityTypes(&$entityTypes) {
+  _duplicatemembership_civix_civicrm_entityTypes($entityTypes);
+}
+
+/**
+ * Implements hook_civicrm_thems().
+ */
+function duplicatemembership_civicrm_themes(&$themes) {
+  _duplicatemembership_civix_civicrm_themes($themes);
+}
+
+function duplicatemembership_civicrm_pre($op, $objectName, $id, &$params) {
+  //Prevent duplicate related memberships to be created.
+  if ($op == 'create' && $objectName == 'Membership'
+    && !empty($params['owner_membership_id'])
+    && !empty($params['membership_type_id'])
+    && !empty($params['contact_id'])) {
+    $existingMembership = civicrm_api3('Membership', 'get', [
+      'sequential' => 1,
+      'owner_membership_id' => ['IS NOT NULL' => 1],
+      'membership_type_id' => $params['membership_type_id'],
+      'contact_id' => $params['contact_id'],
+      'status_id' => ['IN' => ["New", "Current", "Grace"]],
+      'options' => ['limit' => 1],
+    ]);
+    if (!empty($existingMembership['id'])) {
+      $params['id'] = $existingMembership['id'];
+    }
+  }
+}
+// --- Functions below this ship commented out. Uncomment as required. ---
+
+/**
+ * Implements hook_civicrm_preProcess().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_preProcess
+ *
+function duplicatemembership_civicrm_preProcess($formName, &$form) {
+
+} // */
+
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
+ *
+function duplicatemembership_civicrm_navigationMenu(&$menu) {
+  _duplicatemembership_civix_insert_navigation_menu($menu, 'Mailings', array(
+    'label' => E::ts('New subliminal message'),
+    'name' => 'mailing_subliminal_message',
+    'url' => 'civicrm/mailing/subliminal',
+    'permission' => 'access CiviMail',
+    'operator' => 'OR',
+    'separator' => 0,
+  ));
+  _duplicatemembership_civix_navigationMenu($menu);
+} // */
