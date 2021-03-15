@@ -7,8 +7,8 @@ Use-case: User having a single "Family" relationship type to join all family mem
 - Similarly, Mother is connected to Child with the same relationship type.
 - When a membership is created on father's contact, this is inherited to Mother and Child's contact.
 - Now, when a relationship is created between Mother and Father (same rel type), the membership is duplicated on Mother and Child.
-- This extension is to prevent such duplciates to be created.
-- Before creating the inherited membership, it avoid the creation if the contact already has an inherited membership with the same type.
+- This extension is to prevent such duplicates to be created, i.e -
+- Before creating the inherited membership, it avoid the creation if the contact already has an inherited membership of same type.
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
